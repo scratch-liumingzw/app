@@ -6,12 +6,12 @@
 
 #web
 /web/node_modules
-/web/build-web
+# /web/build-web
 /web/package-lock.json
 
 #electron
 /electron/build-server
-# /electron/build-web
+/electron/build-web
 /electron/node_modules
 /electron/output
 /electron/static
