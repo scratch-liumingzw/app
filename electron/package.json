@@ -8,8 +8,9 @@
   "scripts": {
     "start": "npm run copy_files && electron .",
     "rebuild": "electron-rebuild -f -w serialport",
-    "build:mac-x64": "npm run copy_files mac && electron-builder --mac --x64",
-    "build:win-x64": "npm run copy_files windows && electron-builder --windows --x64",
+    "build:mac-x64": "npm run copy_files && electron-builder --mac --x64",
+    "build:win-x64": "npm run copy_files && electron-builder --windows --x64",
+    "build:linux-armv7l": "npm run copy_files && electron-builder --linux --armv7l",
     "copy_files": "node ./copy_files.js"
   },
   "build": {
@@ -55,6 +56,12 @@
       "icon": "electron-builder/icon.ico",
       "target": [
         "nsis"
+      ]
+    },
+    "linux": {
+      "category": "Utility",
+      "target": [
+        "deb"
       ]
     }
   },
