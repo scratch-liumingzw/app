@@ -1,8 +1,8 @@
 {
   "name": "scratch-respberry",
-  "productName": "Rotrics Studio",
+  "productName": "Scratch Respberry",
   "version": "0.3.0",
-  "author": "Rotrics Dev",
+  "author": "liumingzw",
   "license": "MIT",
   "main": "main.js",
   "scripts": {
@@ -13,9 +13,9 @@
     "copy_files": "node ./copy_files.js"
   },
   "build": {
-    "appId": "com.scratch-respberry",
+    "appId": "com.liumingzw",
     "asar": false,
-    "productName": "Rotrics Studio",
+    "productName": "Scratch Respberry",
     "directories": {
       "buildResources": "build",
       "output": "output"
@@ -64,20 +64,12 @@
     "electron-rebuild": "^1.11.0"
   },
   "dependencies": {
-    "image-size": "^0.8.3",
     "is-electron": "^2.2.0",
-    "is-online": "^8.4.0",
-    "jimp": "^0.10.3",
-    "koa": "^2.11.0",
     "koa-body": "^4.1.1",
     "koa-router": "^8.0.8",
     "koa-static": "^5.0.0",
     "lodash": "^4.17.15",
     "request": "^2.88.2",
-    "serialport": "^9.0.0",
-    "socket.io": "^2.3.0",
-    "text-to-svg": "^3.1.5",
-    "three-math": "^0.69.0",
-    "xml2js": "^0.4.23"
+    "socket.io": "^2.3.0"
   }
 }

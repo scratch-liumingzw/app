@@ -11,7 +11,7 @@
 
 #electron
 /electron/build-server
-/electron/build-web
+# /electron/build-web
 /electron/node_modules
 /electron/output
 /electron/static
