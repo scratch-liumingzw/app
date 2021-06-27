@@ -1,0 +1,26 @@
+#server
+/server/node_modules
+/server/build-server
+/server/package-lock.json
+/server/static
+
+#web
+/web/node_modules
+/web/build-web
+/web/package-lock.json
+
+#electron
+/electron/build-server
+/electron/build-web
+/electron/node_modules
+/electron/output
+/electron/static
+/electron/package-lock.json
+
+# Development Env (Jetbrains, Vim, macOS)
+.idea/
+*.swp
+.DS_Store
+
+# others
+/.eslintcache

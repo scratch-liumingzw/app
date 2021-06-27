@@ -1,0 +1,83 @@
+{
+  "name": "scratch-respberry",
+  "productName": "Rotrics Studio",
+  "version": "0.3.0",
+  "author": "Rotrics Dev",
+  "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "start": "npm run copy_files && electron .",
+    "rebuild": "electron-rebuild -f -w serialport",
+    "build:mac-x64": "npm run copy_files mac && electron-builder --mac --x64",
+    "build:win-x64": "npm run copy_files windows && electron-builder --windows --x64",
+    "copy_files": "node ./copy_files.js"
+  },
+  "build": {
+    "appId": "com.scratch-respberry",
+    "asar": false,
+    "productName": "Rotrics Studio",
+    "directories": {
+      "buildResources": "build",
+      "output": "output"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "electron-builder/icon.icns",
+      "identity": "null",
+      "target": [
+        "dmg"
+      ]
+    },
+    "dmg": {
+      "background": "electron-builder/background.tiff",
+      "icon": "electron-builder/icon.icns",
+      "iconSize": 80,
+      "iconTextSize": 12,
+      "contents": [
+        {
+          "x": 434,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 140,
+          "y": 220,
+          "type": "file"
+        }
+      ],
+      "window": {
+        "width": 574,
+        "height": 340
+      }
+    },
+    "win": {
+      "icon": "electron-builder/icon.ico",
+      "target": [
+        "nsis"
+      ]
+    }
+  },
+  "devDependencies": {
+    "electron": "^9.0.0",
+    "electron-builder": "^22.6.1",
+    "electron-rebuild": "^1.11.0"
+  },
+  "dependencies": {
+    "image-size": "^0.8.3",
+    "is-electron": "^2.2.0",
+    "is-online": "^8.4.0",
+    "jimp": "^0.10.3",
+    "koa": "^2.11.0",
+    "koa-body": "^4.1.1",
+    "koa-router": "^8.0.8",
+    "koa-static": "^5.0.0",
+    "lodash": "^4.17.15",
+    "request": "^2.88.2",
+    "serialport": "^9.0.0",
+    "socket.io": "^2.3.0",
+    "text-to-svg": "^3.1.5",
+    "three-math": "^0.69.0",
+    "xml2js": "^0.4.23"
+  }
+}
