@@ -9,9 +9,9 @@
 ## 2.clone代码并安装依赖
 ```bash
 # clone repository，必须三个repository都放在同一个文件夹下（影响copy_files.js脚本执行）
-git clone https://github.com/scratch-respberry-pi/app.git
-git clone https://github.com/scratch-respberry-pi/scratch-vm.git
-git clone https://github.com/scratch-respberry-pi/scratch-blocks.git
+git clone https://github.com/scratch-liumingzw/app.git
+git clone https://github.com/scratch-liumingzw/scratch-vm.git
+git clone https://github.com/scratch-liumingzw/scratch-blocks.git
 
 # npm太慢，推荐cnpm
 cd scratch-vm
