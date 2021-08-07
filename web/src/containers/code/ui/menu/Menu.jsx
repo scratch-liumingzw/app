@@ -4,6 +4,7 @@ import { withTranslation } from 'react-i18next';
 import FileSaver from 'file-saver';
 import { Button, Space, Menu, Dropdown, Input, Tooltip } from 'antd';
 import { FolderOutlined, SaveOutlined } from '@ant-design/icons';
+import { actions as tapsActions } from "../../../../reducers/taps"
 import { actions as codeProjectActions, isProjectNameExist } from "../../../../reducers/codeProject";
 import { CODE_PROJECT_EXTENSION } from "../../../../constants";
 import showSaveConfirmI18n from "../modal-tool/showSaveConfirmI18n.jsx";
@@ -11,6 +12,7 @@ import showSaveAsConfirmI18n from "../modal-tool/showSaveAsConfirmI18n.jsx";
 import showNameInputI18n from "../modal-tool/showNameInputI18n.jsx";
 import messageI18n from "../../../../utils/messageI18n";
 import styles from './styles.css';
+import { TAP_HOME } from "../../../../constants.js";
 
 class Index extends React.Component {
     fileInput = React.createRef();
@@ -184,7 +186,7 @@ class Index extends React.Component {
         if (!projectInfo) {
             return null;
         }
-        const { t } = this.props;
+        const { t, changeTap } = this.props;
         const state = this.state;
         const actions = this.actions;
         return (
@@ -198,6 +200,10 @@ class Index extends React.Component {
                     onChange={actions.openFromYourComputer}
                 />
                 <h4 style={{ margin: "auto", color: "#eeeeee", marginRight: "10px" }}>Scratch</h4>
+                <h4  onClick={() => {
+                            changeTap(TAP_HOME);
+                        }} 
+                        style={{ margin: "auto", color: "#eeeeee", marginRight: "10px" }}>返回</h4>
                 <Dropdown overlay={actions.getMenu4file} placement="bottomCenter">
                     <Button
                         size="small"
@@ -263,6 +269,7 @@ const mapDispatchToProps = (dispatch) => {
         save: () => dispatch(codeProjectActions.save()),
         rename: (projectInfo, name) => dispatch(codeProjectActions.rename(projectInfo, name)),
         create: () => dispatch(codeProjectActions.create()),
+        changeTap: (value) => dispatch(tapsActions.changeTap(value)),
     };
 };
 

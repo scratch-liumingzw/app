@@ -9,6 +9,7 @@ import "antd/dist/antd.css";
 import './global_styles.css';
 
 const reduxStore = createStore(reducer, applyMiddleware(thunk));
+
 ReactDom.render(
     <Provider store={reduxStore}>
         <Index />

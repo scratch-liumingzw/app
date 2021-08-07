@@ -1,26 +1,25 @@
-#server
-/server/node_modules
-/server/build-server
-/server/package-lock.json
-/server/static
-
-#web
-/web/node_modules
-# /web/build-web
-/web/package-lock.json
+# Development Env (Jetbrains, Vim, macOS), eslint
+.idea/
+*.swp
+.DS_Store
+/.eslintcache
 
 #electron
+/electron/assets
 /electron/build-server
 /electron/build-web
 /electron/node_modules
 /electron/output
-/electron/static
 /electron/package-lock.json
 
-# Development Env (Jetbrains, Vim, macOS)
-.idea/
-*.swp
-.DS_Store
+#server
+/server/assets
+/server/build-server
+/server/node_modules
+/server/userData
+/server/package-lock.json
 
-# others
-/.eslintcache
+#web
+/web/build-web/bundle.js*
+/web/node_modules
+/web/package-lock.json

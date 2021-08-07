@@ -2,6 +2,7 @@ const path = require("path")
 const fs = require("fs");
 
 const nodeModules = {};
+
 fs.readdirSync('./node_modules')
     .filter((x) => {
         return ['.bin'].indexOf(x) === -1;
@@ -12,6 +13,7 @@ fs.readdirSync('./node_modules')
 
 module.exports = {
     // devtool: 'source-map',
+    mode: "production",
     entry: './src/index.js',
     target: 'node',
     node: {
@@ -20,7 +22,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, "build-server"),
-        filename: "startLocalServer.js",
+        filename: "bundle.js",
         libraryTarget: "commonjs"
     },
     externals: nodeModules

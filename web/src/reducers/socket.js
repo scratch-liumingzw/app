@@ -9,28 +9,22 @@ const INITIAL_STATE = {
 
 export const actions = {
     init: () => (dispatch) => {
-        if (!isElectron()) {
-            const port = 9000;
-            window.serverAddress = `http://localhost:${port}`;
-            window.serverCacheAddress = `http://localhost:${port}/cache/`;
-            window.serverFontsAddress = `http://localhost:${port}/fonts/`;
-        }
-        console.log('server address: ' + window.serverAddress);
-        console.log('server cache address: ' + window.serverCacheAddress);
-        console.log('server fonts address: ' + window.serverFontsAddress);
+        !isElectron() && (window.httpAddress = "http://localhost:9000");
 
-        socketClientManager.initSocketClient(window.serverAddress);
+        console.log('http server address: ' + window.httpAddress);
+
+        socketClientManager.initSocketClient(window.httpAddress);
         socketClientManager.addServerListener("connect", () => {
             console.log("socket -> connect")
-            dispatch(actions._updateState({status: "connect"}));
+            dispatch(actions._updateState({ status: "connect" }));
         });
         socketClientManager.addServerListener("disconnect", () => {
             console.log("socket -> disconnect")
-            dispatch(actions._updateState({status: "disconnect"}));
+            dispatch(actions._updateState({ status: "disconnect" }));
         });
     },
     _updateState: (state) => {
-        return {type: ACTION_UPDATE_STATE, state};
+        return { type: ACTION_UPDATE_STATE, state };
     }
 };
 

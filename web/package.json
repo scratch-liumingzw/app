@@ -42,7 +42,8 @@
     "webpack-dev-server": "^3.3.1",
     "worker-loader": "^2.0.0",
     "i18next-xhr-backend": "^3.2.2",
-    "react-i18next": "11.3.4"
+    "react-i18next": "11.3.4",
+    "immer": "^9.0.5"
   },
   "dependencies": {
     "i18next": "^20.3.2"

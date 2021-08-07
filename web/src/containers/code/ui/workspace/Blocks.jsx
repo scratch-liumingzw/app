@@ -4,7 +4,7 @@ import i18next from 'i18next'
 import { withTranslation } from 'react-i18next';
 import ScratchBlocks from 'scratch-blocks';
 import makeToolboxXML from '../../lib/make-toolbox-xml';
-import { TAP_CODE } from "../../../../constants.js";
+import { ROUTE_PROJECT_EDIT } from "../../../../constants.js";
 
 const BLOCKS_DEFAULT_OPTIONS = {
     media: './asset/scratch-blocks/media/',
@@ -128,7 +128,7 @@ class Blocks extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.tap !== nextProps.tap && nextProps.tap === TAP_CODE) {
+        if (this.props.tap !== nextProps.tap && nextProps.tap === ROUTE_PROJECT_EDIT) {
             ScratchBlocks.svgResize(this.workspace);
             //TODO: 待优化，多语言有切换，才调用refreshWorkspace
             setTimeout(() => {

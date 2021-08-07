@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    // devtool: 'source-map',
+    devtool: 'source-map',
     entry: "./src/index.jsx",
     output: {
         path: __dirname + "/build-web",
@@ -58,9 +58,9 @@ module.exports = {
     },
     devServer: {
         port: 8080,
-        compress: true,
-        open: false,
-        hot: true,
+        // compress: false,
+        // open: false,
+        // hot: true,
         contentBase: path.join(__dirname, "build-web")
     }
 };

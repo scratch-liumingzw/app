@@ -3,87 +3,80 @@ import path from 'path';
 import electron from 'electron';
 import isElectron from 'is-electron';
 
-const DEFAULT_CONFIG = {
-    is_show_tip: true
+const clearDirAsync = (dir) => {
+    if (fs.existsSync(dir)) {
+        fs.rmdir(
+            dir,
+            { recursive: true },
+            (err) => {
+                if (err) throw err;
+                fs.mkdirSync(dir, { recursive: true });
+            }
+        );
+    } else {
+        fs.mkdirSync(dir, { recursive: true });
+    }
 };
 
 class StoreManager {
     constructor() {
-        //  example project content will change when app upgrade
-        this.dir_code_projects_example = path.join(__dirname, '..', 'static', 'code', 'example_projects');
-
         this.dir_user_data = null;
-        this.dir_code_projects_my = null;
-        this.path_app_config = null;
-        this.path_p3d_cura_engine = null;
+        this.dir_assets = null;
 
-        const platform = process.platform;
+        // assets：资源文件，会打包到 electron 中
+        this.dir_template_projects = null;
+
+        // userData：用户数据，对应到用户电脑的 userData 目录
+        this.dir_cache = null;
+        this.dir_my_projects = null;
+
         if (isElectron()) {
+            // electron 环境下，打包后，执行路径是 app.asar/build-server/bundle.js，即 __dirname = app.asar/build-server
             this.dir_user_data = (electron.app || electron.remote.app).getPath('userData');
-            this.dir_code_projects_my = path.join(this.dir_user_data, 'code', 'my_projects');
-            this.path_app_config = path.join(this.dir_user_data, 'app_config.json');
-            switch (platform) {
-                case 'darwin':
-                    this.path_p3d_cura_engine = path.join(this.dir_user_data, 'CuraEngine', '4.6.2', 'macOS', 'CuraEngine');
-                    break;
-                case 'win32':
-                    this.path_p3d_cura_engine = path.join(this.dir_user_data, 'CuraEngine', '4.6.2', 'Win-x64', 'CuraEngine.exe');
-                    break;
-                case 'linux':
-                    this.path_p3d_cura_engine = path.join(this.dir_user_data, 'CuraEngine', '4.6.2', 'Linux-x64', 'CuraEngine');
-                    break;
-            }
-            //TODO: copy CuraEngine to dir_user_data
+            this.dir_assets = path.join(__dirname, '..', 'assets');
+
+            // assets
+            // this.dir_template_projects = path.join(this.dir_assets, 'template_projects');
+            // if (!fs.existsSync(this.dir_template_projects)) {
+            //     console.error("Error: dir_template_projects not exist");
+            // }
+
+            // userData
+            // app 每次启动清空, 异步清空
+            this.dir_cache = path.join(this.dir_user_data, 'Cache', '_cache')
+            this.dir_my_projects = path.join(this.dir_user_data, 'my_projects');
+            !fs.existsSync(this.dir_my_projects) && fs.mkdirSync(this.dir_my_projects, { recursive: true });
+            clearDirAsync(this.dir_cache);
         } else {
-            this.dir_user_data = path.join(__dirname, '..', 'static');
-            this.dir_code_projects_my = path.join(this.dir_user_data, 'code', 'my_projects');
-            this.path_app_config = path.join(this.dir_user_data, 'app_config.json');
-            const base_path = path.join(__dirname, '..', 'CuraEngine', '4.6.2');
-            switch (platform) {
-                case 'darwin':
-                    this.path_p3d_cura_engine = path.join(base_path, 'macOS', 'CuraEngine');
-                    break;
-                case 'win32':
-                    this.path_p3d_cura_engine = path.join(base_path, 'Win-x64', 'CuraEngine.exe');
-                    break;
-                case 'linux':
-                    this.path_p3d_cura_engine = path.join(base_path, 'Linux-x64', 'CuraEngine');
-                    break;
-            }
+            // dev 环境下，__dirname = ./server/src
+            this.dir_user_data = path.join(__dirname, '..', 'userData');
+            this.dir_assets = path.join(__dirname, '..', 'assets');
+
+            // assets
+            // this.dir_template_projects = path.join(this.dir_assets, 'template_projects');
+            // if (!fs.existsSync(this.dir_template_projects)) {
+            //     console.error("Error: dir_template_projects not exist");
+            // }
+
+            // userData
+            this.dir_cache = path.join(this.dir_user_data, 'Cache', '_cache')
+            this.dir_my_projects = path.join(this.dir_user_data, 'my_projects');
+            !fs.existsSync(this.dir_my_projects) && fs.mkdirSync(this.dir_my_projects, { recursive: true });
+            clearDirAsync(this.dir_cache);
         }
 
-        fs.mkdirSync(this.dir_code_projects_example, {recursive: true});
-        fs.mkdirSync(this.dir_code_projects_my, {recursive: true});
+        console.log('----------------- StoreManager --------------------');
+        console.log("isElectron: " + isElectron());
+        console.log("__dirname: " + __dirname);
 
-        // console.log('-------------------------------')
-        // console.log(this.dir_code_projects_example);
-        // console.log(this.dir_user_data);
-        // console.log(this.dir_code_projects_my);
-        // console.log(this.path_app_config);
-        // console.log(this.path_p3d_cura_engine);
+        console.log("dir_user_data: " + this.dir_user_data);
+        console.log("dir_assets: " + this.dir_assets);
 
-        this._setupDefaultAppConfig();
-    }
+        // console.log("dir_template_projects: " + this.dir_template_projects);
 
-    _setupDefaultAppConfig() {
-        if (!fs.existsSync(this.path_app_config)) {
-            fs.writeFileSync(this.path_app_config, JSON.stringify(DEFAULT_CONFIG));
-        } else {
-            const config = this.getAllAppConfig();
-            if (!config) {
-                fs.writeFileSync(this.path_app_config, JSON.stringify(DEFAULT_CONFIG));
-            }
-        }
-    }
-
-    setAppConfig(key, value) {
-        const content = JSON.parse(fs.readFileSync(this.path_app_config, 'utf8'));
-        content[key] = value;
-        fs.writeFileSync(this.path_app_config, JSON.stringify(content));
-    }
-
-    getAllAppConfig() {
-        return JSON.parse(fs.readFileSync(this.path_app_config, 'utf8'));
+        console.log("dir_cache: " + this.dir_cache);
+        console.log("dir_my_projects: " + this.dir_my_projects);
+        console.log('---------------------------------------------------');
     }
 }
 

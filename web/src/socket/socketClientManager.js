@@ -6,8 +6,8 @@ class SocketClientManager {
         this.isSocketConnected = false;
     }
 
-    initSocketClient(serverAddress) {
-        this.socketClient = io(serverAddress);
+    initSocketClient(httpAddress) {
+        this.socketClient = io(httpAddress);
         this.socketClient.on('connect', () => {
             this.isSocketConnected = true;
         });

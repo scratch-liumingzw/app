@@ -1,6 +1,6 @@
 {
-  "name": "scratch-respberry",
-  "productName": "Scratch Respberry",
+  "name": "robot-hand",
+  "productName": "Robot Hand",
   "version": "0.1.0",
   "author": "liumingzw",
   "email": "374406742@qq.com",
@@ -9,20 +9,21 @@
   "main": "main.js",
   "scripts": {
     "start": "npm run copy_files && electron .",
-    "rebuild": "electron-rebuild -f -w serialport",
     "build:mac-x64": "npm run copy_files && electron-builder --mac --x64",
     "build:win-x64": "npm run copy_files && electron-builder --windows --x64",
-    "build:linux-armv7l": "npm run copy_files && electron-builder --linux --armv7l",
-    "copy_files": "node ./copy_files.js"
+    "copy_files": "node ./buildResources/copy_files.js"
   },
   "build": {
-    "appId": "com.liumingzw",
-    "asar": false,
-    "productName": "Scratch Respberry",
+    "appId": "com.sensetime.tsc.pdl",
+    "asar": true,
+    "productName": "Robot Hand",
     "directories": {
-      "buildResources": "build",
+      "buildResources": "buildResources",
       "output": "output"
     },
+    "files": [
+      "!.npmrc"
+    ],
     "linux": {
       "category": "Utility",
       "maintainer": "liumingzw <374406742@qq.com>",
@@ -30,42 +31,42 @@
         "AppImage"
       ]
     },
-    "win": {
-      "icon": "electron-builder/icon.ico",
-      "target": [
-        "nsis"
-      ]
-    },
     "mac": {
       "category": "public.app-category.productivity",
-      "icon": "electron-builder/icon.icns",
+      "icon": "buildResources/icon.icns",
       "identity": "null",
       "target": [
         "dmg"
       ]
     },
     "dmg": {
-      "background": "electron-builder/background.tiff",
-      "icon": "electron-builder/icon.icns",
+      "background": "buildResources/background.png",
+      "icon": "buildResources/icon.icns",
       "iconSize": 80,
       "iconTextSize": 12,
       "contents": [
         {
-          "x": 434,
-          "y": 220,
-          "type": "link",
-          "path": "/Applications"
+          "x": 140,
+          "y": 180,
+          "type": "file"
         },
         {
-          "x": 140,
-          "y": 220,
-          "type": "file"
+          "x": 434,
+          "y": 180,
+          "type": "link",
+          "path": "/Applications"
         }
       ],
       "window": {
         "width": 574,
-        "height": 340
+        "height": 350
       }
+    },
+    "win": {
+      "icon": "buildResources/icon.ico",
+      "target": [
+        "nsis"
+      ]
     }
   },
   "devDependencies": {
@@ -73,10 +74,14 @@
     "electron-builder": "^22.11.7"
   },
   "dependencies": {
+    "is-electron": "^2.2.0",
+    "koa": "^2.11.0",
     "koa-body": "^4.1.1",
     "koa-router": "^8.0.8",
     "koa-static": "^5.0.0",
     "lodash": "^4.17.15",
+    "uuid": "^7.0.3",
+    "request": "^2.88.2",
     "socket.io": "^2.3.0"
   }
 }

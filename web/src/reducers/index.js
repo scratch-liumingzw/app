@@ -1,18 +1,16 @@
 import { combineReducers } from 'redux';
 import hotKeys from "./hotKeys";
-import serialPort from "./serialPort";
+import projectEdit from "./projectEdit";
+import projectManage from "./projectManage";
+import router from "./router";
+import scratch from "./scratch";
 import socket from "./socket";
-import taps from "./taps";
-import code from "./code";
-import codeProject from "./codeProject";
-import header from "./header";
 
 export default combineReducers({
     hotKeys,
-    serialPort,
-    socket,
-    taps,
-    code,
-    codeProject,
-    header,
+    projectEdit,
+    projectManage,
+    router,
+    scratch,
+    socket
 });

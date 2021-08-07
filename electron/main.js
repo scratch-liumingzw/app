@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell } = require('electron');
+const { app, BrowserWindow, shell, Menu, MenuItem } = require('electron');
 const path = require('path');
 
 function createWindow() {
@@ -7,21 +7,22 @@ function createWindow() {
         height: 768,
         minWidth: 850,
         minHeight: 400,
-        // webPreferences: {
-        //     preload: path.join(__dirname, './build-server/startLocalServer.js')
-        // },
+        webPreferences: {
+            preload: path.join(__dirname, './build-server/bundle.js')
+        },
         devTools: true,
         nodeIntegration: true,
     });
     mainWindow.loadFile('./build-web/index.html')
+
     // mainWindow.webContents.openDevTools();
 
     // Open every external link in a new window of default OS browser
     // https://github.com/electron/electron/blob/master/docs/api/web-contents.md
-    mainWindow.webContents.on('new-window', (event, url) => {
-        event.preventDefault();
-        shell.openExternal(url);
-    });
+    // mainWindow.webContents.on('new-window', (event, url) => {
+    //     event.preventDefault();
+    //     shell.openExternal(url);
+    // });
 }
 
 //https://github.com/electron/electron/issues/18397
