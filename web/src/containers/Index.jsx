@@ -5,13 +5,14 @@ import ProjectManage from "./ProjectManage/index.jsx";
 import Router from "./Router/index.jsx";
 import { actions as hotKeysActions } from "../reducers/hotKeys";
 import { actions as projectManageActions } from "../reducers/projectManage";
-import { actions as scratchActions } from "../reducers/scratch";
+import { actions as projectEditActions } from "../reducers/projectEdit";
 import { actions as socketActions } from "../reducers/socket";
 import { ROUTE_PROJECT_MANAGE, ROUTE_PROJECT_EDIT, ROUTE_ROUTER } from "../constants.js";
 import styles from './styles.css';
 
 class Index extends React.Component {
-    componentDidMount() {
+    constructor(props) {
+        super(props);
         this.props.init();
     }
 
@@ -43,11 +44,11 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         init: () => {
-            dispatch(hotKeysActions.setup());
             dispatch(projectManageActions.readMyProjects());
             dispatch(projectManageActions.readTemplateProjects());
-            dispatch(socketActions.init()); // must execute first
-            dispatch(scratchActions.init());
+            dispatch(socketActions.init());
+            dispatch(hotKeysActions.init());
+            dispatch(projectEditActions.init());
         }
     };
 };

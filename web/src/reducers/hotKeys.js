@@ -2,7 +2,7 @@ import hotKeys from 'hotkeys-js';
 import { ROUTE_ROUTER } from "../constants.js";
 
 const actions = {
-    setup: () => (dispatch, getState) => {
+    init: () => (dispatch, getState) => {
         hotKeys('backspace,del', (event) => {
             event.preventDefault();
         });

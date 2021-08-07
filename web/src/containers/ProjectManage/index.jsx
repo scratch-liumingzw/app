@@ -7,6 +7,7 @@ import { actions as projectManageActions } from "../../reducers/projectManage";
 import { actions as projectEditActions } from "../../reducers/projectEdit";
 import { actions as routerActions } from "../../reducers/router";
 import electronPackageJson from "../../../../electron/package.json";
+import { ROUTE_ROUTER } from "../../constants.js";
 
 class Index extends React.Component {
     state = {
@@ -16,6 +17,9 @@ class Index extends React.Component {
     };
 
     actions = {
+        onClickBack: () => {
+            this.props.setRoute(ROUTE_ROUTER);
+        },
         onClickCreateProject: () => {
             this.setState({
                 createProjectModalVisible: true,
@@ -37,6 +41,7 @@ class Index extends React.Component {
                 projectListType: "template",
             });
         },
+        // CreateProjectModal callback
         onCancelCreateProjectModal: () => {
             this.setState({
                 createProjectModalVisible: false,
@@ -61,7 +66,7 @@ class Index extends React.Component {
         const state = this.state;
         const actions = this.actions;
         return (
-            <div style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}>
+            <div style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "#eeeeee" }}>
                 <CreateProjectModal
                     visible={state.createProjectModalVisible}
                     projects={state.projects}
@@ -69,10 +74,11 @@ class Index extends React.Component {
                     onConfirm={actions.onConfirmCreateProjectModal}
                 />
                 <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: "50px", backgroundColor: "#b0b0b0" }}>
-                    <h2>{`潘多拉低代码开发平台${electronPackageJson.version}`}</h2>
+                    <h2>{`机器人机械手V${electronPackageJson.version}`}</h2>
                 </div>
                 <div style={{ position: "absolute", left: 0, bottom: 0, top: "50px", width: "200px", backgroundColor: "#c0c0c0" }}>
                     <Space direction="vertical" style={{ width: "100%", padding: "10px" }}>
+                        <Button style={{ width: "100%" }} ghost onClick={actions.onClickBack}>返回</Button>
                         <Button style={{ width: "100%" }} ghost onClick={actions.onClickCreateProject}>新建项目</Button>
                         <Button style={{ width: "100%" }} ghost onClick={actions.onClickMyProject}>我的项目</Button>
                         <Button style={{ width: "100%" }} ghost onClick={actions.onClickTemplateProject}>模版项目</Button>

@@ -1,15 +1,15 @@
 import React from 'react';
-import {connect} from 'react-redux';
-import {Space} from 'antd';
+import { connect } from 'react-redux';
+import { Space } from 'antd';
 import styles from './styles.css';
 
 class Index extends React.Component {
     render() {
-        const {variables} = this.props;
+        const { variables } = this.props;
         return (
             <Space direction={"vertical"} size={2} >
                 {variables.map(variable => {
-                    const {visible, id, value, name} = variable;
+                    const { visible, id, value, name } = variable;
                     if (visible) {
                         return (
                             <div key={id} className={styles.div_variable_item}>
@@ -27,7 +27,7 @@ class Index extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    const {variables} = state.code;
+    const { variables } = state.projectEdit;
     return {
         variables
     };

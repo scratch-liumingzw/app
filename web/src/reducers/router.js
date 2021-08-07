@@ -1,9 +1,9 @@
-import { ROUTE_GESTURE, ROUTE_VOICE, ROUTE_PROJECT_MANAGE, ROUTE_ROUTER } from "../constants.js";
+import { ROUTE_GESTURE, ROUTE_VOICE, ROUTE_PROJECT_MANAGE, ROUTE_ROUTER, ROUTE_PROJECT_EDIT } from "../constants.js";
 
 const ACTION_UPDATE_STATE = 'router/ACTION_UPDATE_STATE';
 
 const INITIAL_STATE = {
-    route: ROUTE_ROUTER
+    route: ROUTE_PROJECT_EDIT
 };
 
 const actions = {
@@ -11,7 +11,6 @@ const actions = {
         return { type: ACTION_UPDATE_STATE, state };
     },
     setRoute: (route) => (dispatch) => {
-        console.log(route);
         switch (route) {
             case ROUTE_GESTURE:
                 break;

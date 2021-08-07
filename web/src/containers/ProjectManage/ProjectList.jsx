@@ -7,7 +7,6 @@ import { actions as projectEditActions } from "../../reducers/projectEdit";
 import { actions as routerActions } from "../../reducers/router";
 import { ROUTE_PROJECT_EDIT } from "../../constants.js";
 import showStringInputModal from "../../components/Modals/showStringInputModal.jsx";
-import { REACT, VUE } from '../../constants.js';
 import ProjectInfo from "../../components/ProjectInfo/index.jsx";
 
 /**
@@ -23,8 +22,6 @@ class Index extends React.Component {
     actions = {
         onSelectProject: (project) => {
             this.setState({ project })
-        },
-        onClickPreview: () => {
         },
         onClickEdit: () => {
             this.props.setRoute(ROUTE_PROJECT_EDIT);
@@ -82,27 +79,6 @@ class Index extends React.Component {
                     await this.props.duplicateProjectToMy(this.state.project, newName);
                 }
             });
-        },
-        onClickExport: async () => {
-            const modal = Modal.confirm({
-                title: "导出项目源码",
-                centered: true,
-                autoFocusButton: null,
-                content:
-                    <Button
-                        style={{ position: "absolute", left: "30px", bottom: "25px" }}
-                        onClick={async () => {
-                            modal.destroy();
-                        }}>
-                        {"导出Vue版本"}
-                    </Button>,
-                cancelText: "导出React版本",
-                cancelButtonProps: { type: "default" },
-                onCancel: async () => {
-                },
-                okText: "取消",
-                okButtonProps: { type: "default" },
-            })
         }
     };
 
@@ -125,6 +101,10 @@ class Index extends React.Component {
             case "template":
                 projects = props.templateProjects;
                 break;
+        }
+
+        if (!projects || projects.length === 0) {
+            return null;
         }
 
         return (

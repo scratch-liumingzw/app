@@ -1,8 +1,9 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import Blocks from './Blocks.jsx';
 import VariableList from './VariableList.jsx';
 import styles from './styles.css';
+import commonStyles from '../../commonStyles.css';
 
 class Index extends React.Component {
     actions = {
@@ -16,22 +17,22 @@ class Index extends React.Component {
 
     render() {
         const actions = this.actions;
-        const {running} = this.props;
+        const props = this.props;
         return (
-            <div style={{width: "100%", height: "100%"}}>
-                <Blocks/>
+            <div className={commonStyles.div_fill_parent}>
+                <Blocks />
                 <div className={styles.div_variable_list}>
-                    <VariableList/>
+                    <VariableList />
                 </div>
-                <button disabled={!running} onClick={actions.stopVM} className={styles.btn_stop}/>
-                <button disabled={running} onClick={actions.startVM} className={styles.btn_green_flag}/>
+                <button disabled={!props.running} onClick={actions.stopVM} className={styles.btn_stop} />
+                <button disabled={props.running} onClick={actions.startVM} className={styles.btn_green_flag} />
             </div>
         )
     }
 }
 
 const mapStateToProps = (state) => {
-    const {vm, running} = state.code;
+    const { vm, running } = state.projectEdit;
     return {
         vm,
         running

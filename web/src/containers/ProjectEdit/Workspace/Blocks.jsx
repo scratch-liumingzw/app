@@ -1,10 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import i18next from 'i18next'
-import { withTranslation } from 'react-i18next';
 import ScratchBlocks from 'scratch-blocks';
-import makeToolboxXML from '../../lib/make-toolbox-xml';
-import { ROUTE_PROJECT_EDIT } from "../../../../constants.js";
+import makeToolboxXML from '../../code/lib/make-toolbox-xml';
 
 const BLOCKS_DEFAULT_OPTIONS = {
     media: './asset/scratch-blocks/media/',
@@ -35,43 +32,10 @@ const BLOCKS_DEFAULT_OPTIONS = {
     sounds: false
 };
 
-// map local from "cura" to "scratch"
-const getLocale = (language) => {
-    switch (language) {
-        case "de-DE":
-            return "de";
-        case "en":
-            return "en";
-        case "es-ES":
-            return "de";
-        case "fr-FR":
-            return "fr";
-        case "it-IT":
-            return "it";
-        case "ja-JP":
-            return "ja";
-        case "ko-KR":
-            return "ko";
-        case "ru-RU":
-            return "ru";
-        case "zh-CN":
-            return "zh-cn";
-        case "zh-TW":
-            return "zh-tw";
-        case "pt-BR":
-            return "pt-br";
-        default:
-            return "en";
-    }
-};
-
 class Blocks extends React.Component {
-    constructor(props) {
-        super(props);
-        this.blocks = React.createRef();
-        this.workspace = null;
-        this.flyoutWorkspace = null;
-    }
+    blocks = React.createRef();
+    workspace = null;
+    flyoutWorkspace = null;
 
     componentDidMount() {
         const toolbox = makeToolboxXML();
@@ -85,17 +49,6 @@ class Blocks extends React.Component {
         this.attachVM();
 
         this.updateCss();
-
-        //language
-        if (getLocale(this.props.i18n.language) !== this.props.vm.getLocale()) {
-            this.changeLocale(getLocale(this.props.i18n.language));
-        }
-        i18next.on('languageChanged', (lng) => {
-            const locale = getLocale(lng)
-            if (locale !== this.props.vm.getLocale()) {
-                this.changeLocale(locale);
-            }
-        });
 
         this.props.vm.refreshWorkspace();
     }
@@ -127,15 +80,6 @@ class Blocks extends React.Component {
         ScratchBlocks.svgResize(this.workspace)
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (this.props.tap !== nextProps.tap && nextProps.tap === ROUTE_PROJECT_EDIT) {
-            ScratchBlocks.svgResize(this.workspace);
-            //TODO: 待优化，多语言有切换，才调用refreshWorkspace
-            setTimeout(() => {
-                this.props.vm.refreshWorkspace();
-            }, 0)
-        }
-    }
 
     componentWillUnmount() {
         this.detachVM();
@@ -211,14 +155,12 @@ class Blocks extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    const { vm } = state.code;
-    const { tap } = state.taps;
+    const { vm } = state.projectEdit;
     return {
         vm,
-        tap
     };
 };
 
-export default connect(mapStateToProps)(withTranslation()(Blocks));
+export default connect(mapStateToProps)(Blocks);
 
 
