@@ -6,11 +6,11 @@ import styles from './styles.css';
 class Index extends React.PureComponent {
     render() {
         const { project, isSelected, onSelect } = this.props;
-        const { data, filepath, birthtimeMs, mtimeMs } = project;
+        const { data, birthtimeMs, mtimeMs } = project;
         const { name } = data.meta;
         return (
             <div
-                style={{ height: "250px", width: "250px", margin: "5px", display: "inline-block" }}
+                style={{ height: "250px", width: "250px", margin: "10px", display: "inline-block" }}
                 className={isSelected ? styles.div_project_selected : styles.div_project}
                 onClick={() => {
                     onSelect(project);

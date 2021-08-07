@@ -142,7 +142,7 @@ class Index extends React.Component {
                     </Button>
                 ]}
             >
-                <Row gutter={[20, 20]} >
+                <Row gutter={[30, 30]} >
                     {
                         projects.map((item, index) => {
                             return (

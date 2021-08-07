@@ -9,7 +9,7 @@ const INITIAL_STATE = {
     // componentInfo: { sourceId, props }
     myProjects: [],
     templateProjects: [],
-    projectManageModalVisible: true
+    projectManageModalVisible: false
 };
 
 // 项目管理
