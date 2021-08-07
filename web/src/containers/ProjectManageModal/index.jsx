@@ -114,7 +114,7 @@ class Index extends React.Component {
                         type="primary"
                         size="small"
                         onClick={actions.onClickEdit}>
-                        编辑
+                        打开
                     </Button>,
                     <Button
                         ghost
