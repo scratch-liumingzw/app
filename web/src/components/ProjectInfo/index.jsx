@@ -7,7 +7,7 @@ class Index extends React.PureComponent {
     render() {
         const { project, isSelected, onSelect } = this.props;
         const { data, filepath, birthtimeMs, mtimeMs } = project;
-        const { name, width, height } = data;
+        const { name } = data.meta;
         return (
             <div
                 style={{ height: "250px", width: "250px", margin: "5px", display: "inline-block" }}
@@ -17,8 +17,6 @@ class Index extends React.PureComponent {
                 }}
             >
                 <p className={styles.p_project_info}>{`项目名称: ${name}`}</p>
-                <p className={styles.p_project_info}>{`宽度: ${width}`}</p>
-                <p className={styles.p_project_info}>{`高度: ${height}`}</p>
                 <p className={styles.p_project_info}>{`创建时间: ${timestamp2date(birthtimeMs)}`}</p>
                 <p className={styles.p_project_info}>{`最近修改: ${timestamp2date(mtimeMs)}`}</p>
             </div>

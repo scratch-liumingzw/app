@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, Space, message, Modal } from 'antd';
+import { Button, message, Modal, Row } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { actions as projectManageActions } from "../../reducers/projectManage";
 import { actions as projectEditActions } from "../../reducers/projectEdit";
@@ -79,7 +79,11 @@ class Index extends React.Component {
                     await this.props.duplicateProjectToMy(this.state.project, newName);
                 }
             });
-        }
+        },
+        onClickCancel: () => {
+
+        },
+
     };
 
     componentWillReceiveProps(nextProps) {
@@ -93,31 +97,17 @@ class Index extends React.Component {
         const actions = this.actions;
         const props = this.props;
 
-        let projects = [];
-        switch (props.projectListType) {
-            case "my":
-                projects = props.myProjects;
-                break;
-            case "template":
-                projects = props.templateProjects;
-                break;
-        }
-
-        if (!projects || projects.length === 0) {
-            return null;
-        }
+        const projects = props.myProjects;
 
         return (
-            <div style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}>
-                <Space style={{ width: "100%", height: "40px", padding: "5px" }}>
-                    <Button
-                        ghost
-                        disabled={!state.project}
-                        type="primary"
-                        size="small"
-                        onClick={actions.onClickPreview}>
-                        预览
-                    </Button>
+            <Modal
+                title={"我的项目"}
+                closable={true}
+                centered={true}
+                visible={props.projectManageModalVisible}
+                onCancel={props.hideProjectManageModal}
+                width={"80%"}
+                footer={[
                     <Button
                         ghost
                         disabled={!state.project}
@@ -125,7 +115,7 @@ class Index extends React.Component {
                         size="small"
                         onClick={actions.onClickEdit}>
                         编辑
-                    </Button>
+                    </Button>,
                     <Button
                         ghost
                         disabled={!state.project}
@@ -133,7 +123,7 @@ class Index extends React.Component {
                         size="small"
                         onClick={actions.onClickRename}>
                         重命名
-                    </Button>
+                    </Button>,
                     <Button
                         ghost
                         disabled={!state.project}
@@ -141,7 +131,7 @@ class Index extends React.Component {
                         size="small"
                         onClick={actions.onClickDel}>
                         删除
-                    </Button>
+                    </Button>,
                     <Button
                         ghost
                         disabled={!state.project}
@@ -150,16 +140,9 @@ class Index extends React.Component {
                         onClick={actions.onClickDuplicate}>
                         复制
                     </Button>
-                    <Button
-                        ghost
-                        disabled={!state.project}
-                        type="primary"
-                        size="small"
-                        onClick={actions.onClickExport}>
-                        导出项目源码
-                    </Button>
-                </Space>
-                <div style={{ position: "absolute", top: "40px", right: 0, bottom: 0, left: 0, overflow: "auto" }}>
+                ]}
+            >
+                <Row gutter={[20, 20]} >
                     {
                         projects.map((item, index) => {
                             return (
@@ -174,18 +157,18 @@ class Index extends React.Component {
                             );
                         })
                     }
-                </div >
-
-            </div >
+                </Row>
+            </Modal>
         )
     }
 }
 
 const mapStateToProps = (state) => {
-    const { templateProjects, myProjects } = state.projectManage;
+    const { templateProjects, myProjects, projectManageModalVisible } = state.projectManage;
     return {
         templateProjects,
-        myProjects
+        myProjects,
+        projectManageModalVisible
     };
 };
 
@@ -196,6 +179,7 @@ const mapDispatchToProps = (dispatch) => {
         duplicateProjectToMy: (project, name) => dispatch(projectManageActions.duplicateProjectToMy(project, name)),
         renameMyProject: (project, name) => dispatch(projectManageActions.renameMyProject(project, name)),
         deleteMyProject: (project) => dispatch(projectManageActions.deleteMyProject(project)),
+        hideProjectManageModal: () => dispatch(projectManageActions.hideProjectManageModal()),
     };
 };
 

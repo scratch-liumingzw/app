@@ -133,7 +133,7 @@ export const actions = {
     renameProject: (name) => async (dispatch, getState) => {
         dispatch(actions._updateState({ name, saved: false }));
     },
-    loadProject: (project) => async (dispatch, getState) => {
+    loadProjectToWorkspace: (project) => async (dispatch, getState) => {
         const { name } = project.data.meta;
         // vm doto
         dispatch(actions._updateState({ project, name, saved: true, }));

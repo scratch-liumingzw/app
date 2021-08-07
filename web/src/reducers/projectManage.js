@@ -9,12 +9,24 @@ const INITIAL_STATE = {
     // componentInfo: { sourceId, props }
     myProjects: [],
     templateProjects: [],
+    projectManageModalVisible: true
 };
 
 // 项目管理
 const actions = {
     _updateState: (state) => {
         return { type: ACTION_UPDATE_STATE, state };
+    },
+    showProjectManageModal: () => async (dispatch, getState) => {
+        const { myProjects } = getState().projectManage;
+        if (myProjects.length === 0) {
+            message.warn("我的项目为空");
+        } else {
+            dispatch(actions._updateState({ projectManageModalVisible: true }));
+        }
+    },
+    hideProjectManageModal: () => async (dispatch) => {
+        dispatch(actions._updateState({ projectManageModalVisible: false }));
     },
     // C
     createProject: (data) => async (dispatch) => {

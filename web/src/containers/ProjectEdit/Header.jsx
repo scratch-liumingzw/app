@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import { Button, Space, Menu, Dropdown, Modal } from 'antd';
 import { FolderOutlined, SaveOutlined, HomeOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { actions as projectEditActions } from "../../reducers/projectEdit";
+import { actions as projectManageActions } from "../../reducers/projectManage";
 import { actions as routerActions } from "../../reducers/router";
 import { ROUTE_ROUTER } from "../../constants.js";
 import InputString from "../../components/InputString/index.jsx";
 import showStringInputModal from "../../components/Modals/showStringInputModal.jsx";
-
 
 class Index extends React.Component {
     actions = {
@@ -103,7 +103,7 @@ class Index extends React.Component {
 
                     break;
                 case "My Projects":
-                    this.props.openModal4myProjects();
+                    this.props.showProjectManageModal();
                     break;
             }
         },
@@ -114,6 +114,7 @@ class Index extends React.Component {
             return null;
         }
 
+        const state = this.state;
         const actions = this.actions;
         const props = this.props;
         return (
@@ -151,10 +152,10 @@ class Index extends React.Component {
 
 const mapStateToProps = (state) => {
     const { project, name, saved } = state.projectEdit;
-    console.log("===========================")
-    console.log("name: ", name)
-    console.log("saved: ", saved)
-    console.log(JSON.stringify(project, null, 2))
+    // console.log("===========================")
+    // console.log("name: ", name)
+    // console.log("saved: ", saved)
+    // console.log(JSON.stringify(project, null, 2))
     return {
         project,
         name,
@@ -168,6 +169,7 @@ const mapDispatchToProps = (dispatch) => {
         saveProject: () => dispatch(projectEditActions.saveProject()),
         renameProject: (name) => dispatch(projectEditActions.renameProject(name)),
         clearWorkspace: () => dispatch(projectEditActions.clearWorkspace()),
+        showProjectManageModal: () => dispatch(projectManageActions.showProjectManageModal()),
     };
 };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ProjectEdit from "./ProjectEdit/index.jsx";
-import ProjectManage from "./ProjectManage/index.jsx";
+import ProjectManage from "./ProjectManageModal/index.jsx";
 import Router from "./Router/index.jsx";
 import { actions as hotKeysActions } from "../reducers/hotKeys";
 import { actions as projectManageActions } from "../reducers/projectManage";
