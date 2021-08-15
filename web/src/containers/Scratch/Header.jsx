@@ -28,34 +28,29 @@ class Index extends React.Component {
                 </Menu>
             )
         },
-        newProject: async () => {
-            console.log(11)
-            await this.props.saveProjectWithConfirm();
-            console.log(22)
-            showStringInputModal({
-                title: "新建项目名称",
-                name: `新建项目 ${new Date().toLocaleDateString()}`,
-                okText: "新建",
-                cancelText: "取消",
-                onOk: async (inputName) => {
-                    if (inputName.length === 0) {
-                        message.warning('项目名不能为空');
-                        return;
-                    }
-                    await this.props.newThenLoadProjectAsEditing(inputName)
-                },
-                onCancel: () => {
-                }
-            })
-        },
         onMenu4fileClick: async ({ key }) => {
             switch (key) {
                 case "New":
-                    await this.actions.newProject();
+                    await this.props.saveProjectWithConfirm();
+                    showStringInputModal({
+                        title: "新建项目名称",
+                        name: `新建项目 ${new Date().toLocaleDateString()}`,
+                        okText: "新建",
+                        cancelText: "取消",
+                        onOk: async (inputName) => {
+                            if (inputName.length === 0) {
+                                message.warning('项目名不能为空');
+                                return;
+                            }
+                            await this.props.newThenLoadProjectAsEditing(inputName)
+                        },
+                        onCancel: () => {
+                        }
+                    })
                     break;
                 case "My Projects":
-                    // await this.props.saveProjectWithConfirm();
-                    // this.props.showProjectManageModal();
+                    await this.props.saveProjectWithConfirm();
+                    this.props.showProjectManageModal();
                     break;
             }
         },
