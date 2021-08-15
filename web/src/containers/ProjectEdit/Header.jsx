@@ -16,9 +16,7 @@ class Index extends React.Component {
             this.props.setRoute(ROUTE_ROUTER);
         },
         onClickSave: async () => {
-            console.log("t-1")
             await this.props.saveProject();
-            console.log("t-2")
         },
         createNewProject: () => {
             const name = `新建项目 ${new Date().toLocaleDateString()}`;

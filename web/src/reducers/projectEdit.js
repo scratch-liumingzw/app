@@ -1,13 +1,12 @@
 import VM from 'scratch-vm';
-import blankProject from "../blankProject.json";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import blankProject from "./blankProject.json";
 import blankScProject from "./blankScProject.json";
 import { cloneDeep } from '../utils';
 import { actions as projectManageActions } from "./projectManage";
 import { message, Modal } from 'antd';
 import * as api from "../api";
 import showStringInputModal from "../components/Modals/showStringInputModal.jsx";
-import { FolderOutlined, SaveOutlined, HomeOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-
 
 const ACTION_UPDATE_STATE = 'projectEdit/ACTION_UPDATE_STATE';
 
@@ -15,11 +14,10 @@ const INITIAL_STATE = {
     projectEditing: null,
     projectTemp: null,
     saved: true,
-    name: "",
-
+    name: null,
     vm: null,
     running: false,
-    variables: [] //item={visible, id, value, name}
+    variables: [] // item = { visible, id, value, name }
 };
 
 export const actions = {
@@ -28,6 +26,7 @@ export const actions = {
     },
     init: () => (dispatch, getState) => {
         console.log("## init vm")
+
         const vm = new VM();
         vm.start();
         dispatch(actions._updateState({ vm }));
@@ -36,7 +35,7 @@ export const actions = {
         // 为了方便，直接生成一个默认的项目，json 格式，加载即可
         // blankScProject.json 的生成：使用官方的 scratch-gui，const json = vm.toJSON();
         //参考：scratch-gui/lib/vm-listener-hoc.jsx
-        dispatch(actions.loadProjectAsTemp());
+        dispatch(actions.loadBlankScProjectAsTemp());
 
         document.addEventListener('keydown', (e) => {
             // Don't capture keys intended for Blockly inputs.
@@ -100,6 +99,19 @@ export const actions = {
             }
         );
     },
+    loadBlankScProjectAsTemp: () => (dispatch, getState) => {
+        const { vm } = getState().projectEdit;
+        const data = cloneDeep(blankScProject);
+        const project = cloneDeep(blankProject);
+        project.data = data;
+        vm.loadProject(data);
+        dispatch(actions._updateState({
+            projectEditing: null,
+            projectTemp: project,
+            saved: true,
+            name: null,
+        }));
+    },
     loadProjectAsEditing: (project) => (dispatch, getState) => {
         const { vm } = getState().projectEdit;
         vm.loadProject(project.data);
@@ -111,27 +123,28 @@ export const actions = {
             name
         }));
     },
-    loadProjectAsTemp: () => (dispatch, getState) => {
-        const { vm } = getState().projectEdit;
+    newThenLoadProjectAsEditing: async (name) => (dispatch, getState) => {
         const data = cloneDeep(blankScProject);
-        const project = cloneDeep(blankProject);
-        project.data = data;
-        vm.loadProject(data);
-        dispatch(actions._updateState({
-            projectEditing: null,
-            projectTemp: project,
-            saved: true,
-            name: "临时项目",
-        }));
+        data.meta.name = name;
+        const { status, result: project } = await api.createProject(data);
+        if (status === "ok") {
+            dispatch(actions.loadProjectAsEditing(project));
+            dispatch(actions.readMyProjects());
+            message.success("新建成功");
+        } else {
+            console.error('newThenLoadProjectAsEditing error');
+            message.error("新建失败");
+        }
     },
     dispose: () => async (dispatch, getState) => {
         dispatch(actions._updateState({
             projectEditing: null,
             projectTemp: null,
             saved: true,
-            name: "",
+            name: null,
         }));
     },
+    // 多个地方都会需要使用此 action，并且需要和 UI 配合，因此还是写在一个地方更好
     saveProject: () => async (dispatch, getState) => {
         if (getState().projectEdit.saved) {
             return { type: null };
@@ -145,7 +158,7 @@ export const actions = {
             }
             return new Promise((resolve, reject) => {
                 Modal.confirm({
-                    title: '项目有修改',
+                    title: '项目有修改，是否保存？',
                     icon: <ExclamationCircleOutlined />,
                     okText: "放弃修改",
                     okType: "danger",
@@ -161,13 +174,13 @@ export const actions = {
                         // 更新已有的项目
                         const { status, result } = await api.updateMyProject(project);
                         if (status === "ok") {
-                            message.success('保存成功');
                             dispatch(actions._updateState({
-                                projectEditing: project,
+                                projectEditing: result,
                                 projectTemp: null,
                                 saved: true
                             }));
                             dispatch(projectManageActions.readMyProjects());
+                            message.success('保存成功');
                             resolve();
                         } else {
                             message.error('保存失败');
@@ -185,7 +198,7 @@ export const actions = {
             return new Promise((resolve, reject) => {
                 const name = `新项目 ${new Date().toLocaleDateString()}`;
                 showStringInputModal({
-                    title: "当前项目未保存",
+                    title: "当前的临时项目未保存，是否保存？",
                     name,
                     okText: "保存",
                     cancelText: "不保存",
@@ -226,20 +239,9 @@ export const actions = {
         await processProjectEditing();
 
         await processProjectTemp();
-    },
-    test: () => async (dispatch, getState) => {
-        console.log("test")
-        await tt();
-        dispatch(actions.renameProject("liuming"))
-    },
-};
 
-const tt = () => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve();
-        }, 3000)
-    });
+        return { type: null };
+    },
 };
 
 export default function reducer(state = INITIAL_STATE, action) {
