@@ -5,7 +5,6 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { actions as projectManageActions } from "../../reducers/projectManage";
 import { actions as projectEditActions } from "../../reducers/projectEdit";
 import { actions as routerActions } from "../../reducers/router";
-import { ROUTE_ROUTER } from "../../constants.js";
 import showStringInputModal from "../../components/Modals/showStringInputModal.jsx";
 import ProjectInfo from "../../components/ProjectInfo/index.jsx";
 
@@ -23,9 +22,9 @@ class Index extends React.Component {
         onSelectProject: (project) => {
             this.setState({ project })
         },
-        onClickEdit: () => {
-            this.props.setRoute(ROUTE_ROUTER);
-            this.props.loadProjectToWorkspace(this.state.project);
+        onClickEdit: async () => {
+            this.props.loadProjectAsEditing(this.state.project);
+            this.props.hideProjectManageModal();
             this.setState({ project: null })
         },
         onClickRename: async () => {
@@ -178,7 +177,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         setRoute: (route) => dispatch(routerActions.setRoute(route)),
-        loadProjectToWorkspace: (project) => dispatch(projectEditActions.loadProjectToWorkspace(project)),
+        saveProjectWithConfirm: () => dispatch(projectEditActions.saveProjectWithConfirm()),
+        loadProjectAsEditing: (project) => dispatch(projectEditActions.loadProjectAsEditing(project)),
         duplicateProjectToMy: (project, name) => dispatch(projectManageActions.duplicateProjectToMy(project, name)),
         renameMyProject: (project, name) => dispatch(projectManageActions.renameMyProject(project, name)),
         deleteMyProject: (project) => dispatch(projectManageActions.deleteMyProject(project)),

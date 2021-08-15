@@ -12,7 +12,8 @@ import showStringInputModal from "../../components/Modals/showStringInputModal.j
 class Index extends React.Component {
     actions = {
         onClickBack: async () => {
-            await this.props.saveProject();
+            await this.props.saveProjectWithConfirm();
+            this.props.dispose();
             this.props.setRoute(ROUTE_ROUTER);
         },
         onClickSave: async () => {
@@ -27,30 +28,34 @@ class Index extends React.Component {
                 </Menu>
             )
         },
+        newProject: async () => {
+            console.log(11)
+            await this.props.saveProjectWithConfirm();
+            console.log(22)
+            showStringInputModal({
+                title: "新建项目名称",
+                name: `新建项目 ${new Date().toLocaleDateString()}`,
+                okText: "新建",
+                cancelText: "取消",
+                onOk: async (inputName) => {
+                    if (inputName.length === 0) {
+                        message.warning('项目名不能为空');
+                        return;
+                    }
+                    await this.props.newThenLoadProjectAsEditing(inputName)
+                },
+                onCancel: () => {
+                }
+            })
+        },
         onMenu4fileClick: async ({ key }) => {
             switch (key) {
                 case "New":
-                    await this.props.saveProject();
-                    this.props.dispose();
-
-                    showStringInputModal({
-                        title: "项目名称",
-                        name: `新建项目 ${new Date().toLocaleDateString()}`,
-                        okText: "新建",
-                        cancelText: "取消",
-                        onOk: async (inputName) => {
-                            if (inputName.length === 0) {
-                                message.warning('项目名不能为空');
-                                return;
-                            }
-                            await this.props.newThenLoadProjectAsEditing(inputName)
-                        },
-                        onCancel: () => {
-                        }
-                    })
+                    await this.actions.newProject();
                     break;
                 case "My Projects":
-                    this.props.showProjectManageModal();
+                    // await this.props.saveProjectWithConfirm();
+                    // this.props.showProjectManageModal();
                     break;
             }
         },
@@ -84,11 +89,15 @@ class Index extends React.Component {
                     icon={<SaveOutlined />}>
                     {"保存"}
                 </Button>
-                <InputString
-                    value={`项目名: ${props.name}`}
-                    disabled={true}
-                    onAfterChange={actions.onChangeName}
-                />
+                {
+                    props.name &&
+                    <InputString
+                        style={{ width: "200px" }}
+                        value={`项目名: ${props.name}`}
+                        disabled={true}
+                        onAfterChange={actions.onChangeName}
+                    />
+                }
             </Space>
         )
     }
@@ -116,7 +125,10 @@ const mapDispatchToProps = (dispatch) => {
         setRoute: (route) => dispatch(routerActions.setRoute(route)),
         showProjectManageModal: () => dispatch(projectManageActions.showProjectManageModal()),
         saveProject: () => dispatch(projectEditActions.saveProject()),
+        saveProjectWithConfirm: () => dispatch(projectEditActions.saveProjectWithConfirm()),
         newThenLoadProjectAsEditing: (name) => dispatch(projectEditActions.newThenLoadProjectAsEditing(name)),
+        dispose: () => dispatch(projectEditActions.dispose()),
+
     };
 };
 

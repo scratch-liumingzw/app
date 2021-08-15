@@ -1,3 +1,4 @@
+import React from 'react';
 import VM from 'scratch-vm';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import blankProject from "./blankProject.json";
@@ -19,6 +20,9 @@ const INITIAL_STATE = {
     running: false,
     variables: [] // item = { visible, id, value, name }
 };
+
+// this.props.vm.greenFlag();
+// this.props.vm.stopAll();
 
 export const actions = {
     _updateState: (state) => {
@@ -129,7 +133,7 @@ export const actions = {
         const { status, result: project } = await api.createProject(data);
         if (status === "ok") {
             dispatch(actions.loadProjectAsEditing(project));
-            dispatch(actions.readMyProjects());
+            dispatch(projectManageActions.readMyProjects());
             message.success("新建成功");
         } else {
             console.error('newThenLoadProjectAsEditing error');
@@ -137,6 +141,9 @@ export const actions = {
         }
     },
     dispose: () => async (dispatch, getState) => {
+        console.log("#dispose")
+        const { vm } = getState().projectEdit;
+        vm.stopAll();
         dispatch(actions._updateState({
             projectEditing: null,
             projectTemp: null,
@@ -144,26 +151,102 @@ export const actions = {
             name: null,
         }));
     },
-    // 多个地方都会需要使用此 action，并且需要和 UI 配合，因此还是写在一个地方更好
     saveProject: () => async (dispatch, getState) => {
+        const { projectEditing, projectTemp, name, vm } = getState().projectEdit;
+
+        const processProjectEditing = async () => {
+            if (!projectEditing) {
+                return;
+            }
+            const project = cloneDeep(projectEditing);
+            project.data = JSON.parse(vm.toJSON()); // vm.toJSON() 返回 string
+            project.data.meta.name = name;
+            // 更新已有的项目
+            const { status, result } = await api.updateMyProject(project);
+            if (status === "ok") {
+                dispatch(actions._updateState({
+                    projectEditing: result,
+                    projectTemp: null,
+                    saved: true
+                }));
+                dispatch(projectManageActions.readMyProjects());
+                message.success('保存成功');
+            } else {
+                message.error('保存失败');
+            }
+        };
+
+        const processProjectTemp = () => {
+            if (!projectTemp) {
+                return;
+            }
+            return new Promise((resolve, reject) => {
+                const name = `新项目 ${new Date().toLocaleDateString()}`;
+                showStringInputModal({
+                    title: "当前临时项目未保存，是否保存？",
+                    name,
+                    okText: "保存",
+                    cancelText: "不保存",
+                    onOk: async (newName) => {
+                        if (newName.length === 0) {
+                            message.warning('项目名不能为空');
+                            return;
+                        }
+                        // vm.toJSON() 返回 string
+                        const data = JSON.parse(vm.toJSON());
+                        data.meta.name = name;
+                        // 创建新的项目
+                        const { status, result } = await api.createProject(data);
+                        if (status === "ok") {
+                            message.success("保存成功");
+                            // projectTemp 保存后，就变成了 projectEditing
+                            dispatch(actions._updateState({
+                                projectEditing: result,
+                                projectTemp: null,
+                                saved: true,
+                                name
+                            }));
+                            dispatch(projectManageActions.readMyProjects());
+                            resolve();
+                        } else {
+                            message.error("保存失败");
+                            reject();
+                        }
+                    },
+                    onCancel: () => {
+                        resolve();
+                    }
+                })
+            });
+        }
+
+        await processProjectEditing();
+
+        await processProjectTemp();
+
+        return { type: null };
+    },
+
+    // 多个地方都会需要使用此 action，并且需要和 UI 配合，因此还是写在一个地方更好
+    saveProjectWithConfirm: () => async (dispatch, getState) => {
         if (getState().projectEdit.saved) {
             return { type: null };
         }
 
         const { projectEditing, projectTemp, name, vm } = getState().projectEdit;
 
-        const processProjectEditing = () => {
+        const processProjectEditing = async () => {
             if (!projectEditing) {
                 return;
             }
             return new Promise((resolve, reject) => {
                 Modal.confirm({
                     title: '项目有修改，是否保存？',
+                    // centered: true,
                     icon: <ExclamationCircleOutlined />,
                     okText: "放弃修改",
                     okType: "danger",
                     onOk: () => {
-                        dispatch(actions.dispose());
                         resolve();
                     },
                     cancelText: "保存修改",
@@ -228,17 +311,22 @@ export const actions = {
                             reject();
                         }
                     },
-                    onCancel: () => {
-                        dispatch(actions.dispose());
+                    onCancel: async () => {
+                        console.log("canel")
                         resolve();
                     }
                 })
             });
         }
 
+        console.log("processProjectEditing before")
         await processProjectEditing();
 
+        console.log("processProjectEditing after")
+
+        console.log("processProjectTemp before")
         await processProjectTemp();
+        console.log("processProjectTemp after")
 
         return { type: null };
     },
