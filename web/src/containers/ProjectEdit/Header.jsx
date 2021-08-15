@@ -11,37 +11,14 @@ import showStringInputModal from "../../components/Modals/showStringInputModal.j
 
 class Index extends React.Component {
     actions = {
-        onClickBack: () => {
-            if (this.props.saved) {
-                this.props.clearWorkspace();
-                this.props.setRoute(ROUTE_ROUTER);
-            } else {
-                Modal.confirm({
-                    title: '项目有修改',
-                    icon: <ExclamationCircleOutlined />,
-                    okText: "放弃修改",
-                    okType: "danger",
-                    onOk: () => {
-                        this.props.setRoute(ROUTE_PROJECT_MANAGE);
-                    },
-                    cancelText: "保存修改",
-                    onCancel: async () => {
-                        await this.props.saveProject();
-                        this.props.setRoute(ROUTE_PROJECT_MANAGE);
-                    }
-                });
-            }
+        onClickBack: async () => {
+            await this.props.saveProject();
+            this.props.setRoute(ROUTE_ROUTER);
         },
-        onClickSave: () => {
-            this.props.saveProject();
-        },
-        onChangeName: (name) => {
-            name = name.trim();
-            if (name.length === 0) {
-                message.warning('项目名不能为空');
-                return;
-            }
-            this.props.renameProject(name);
+        onClickSave: async () => {
+            console.log("t-1")
+            await this.props.saveProject();
+            console.log("t-2")
         },
         createNewProject: () => {
             const name = `新建项目 ${new Date().toLocaleDateString()}`;
@@ -110,10 +87,6 @@ class Index extends React.Component {
     }
 
     render() {
-        if (!this.props.project) {
-            return null;
-        }
-
         const state = this.state;
         const actions = this.actions;
         const props = this.props;
@@ -142,7 +115,8 @@ class Index extends React.Component {
                     {"保存"}
                 </Button>
                 <InputString
-                    value={props.name}
+                    value={`项目名: ${props.name}`}
+                    disabled={true}
                     onAfterChange={actions.onChangeName}
                 />
             </Space>
@@ -151,13 +125,17 @@ class Index extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    const { project, name, saved } = state.projectEdit;
-    // console.log("===========================")
-    // console.log("name: ", name)
-    // console.log("saved: ", saved)
-    // console.log(JSON.stringify(project, null, 2))
+    const { projectEditing, projectTemp, saved, name } = state.projectEdit;
+    console.log("===========================")
+    console.log("name: ", name)
+    console.log("saved: ", saved)
+    // console.log("projectEditing: ", JSON.stringify(projectEditing, null, 2))
+    // console.log("projectTemp: ", JSON.stringify(projectTemp, null, 2))
+    console.log("projectEditing: ", projectEditing)
+    console.log("projectTemp: ", projectTemp)
     return {
-        project,
+        projectEditing,
+        projectTemp,
         name,
         saved,
     };
@@ -167,8 +145,6 @@ const mapDispatchToProps = (dispatch) => {
     return {
         setRoute: (route) => dispatch(routerActions.setRoute(route)),
         saveProject: () => dispatch(projectEditActions.saveProject()),
-        renameProject: (name) => dispatch(projectEditActions.renameProject(name)),
-        clearWorkspace: () => dispatch(projectEditActions.clearWorkspace()),
         showProjectManageModal: () => dispatch(projectManageActions.showProjectManageModal()),
     };
 };

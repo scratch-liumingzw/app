@@ -3,15 +3,20 @@ import blankProject from "../blankProject.json";
 import blankScProject from "./blankScProject.json";
 import { cloneDeep } from '../utils';
 import { actions as projectManageActions } from "./projectManage";
-import { message } from 'antd';
+import { message, Modal } from 'antd';
 import * as api from "../api";
+import showStringInputModal from "../components/Modals/showStringInputModal.jsx";
+import { FolderOutlined, SaveOutlined, HomeOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
-const ACTION_UPDATE_STATE = 'scratch/ACTION_UPDATE_STATE';
+
+const ACTION_UPDATE_STATE = 'projectEdit/ACTION_UPDATE_STATE';
 
 const INITIAL_STATE = {
-    project: null,
+    projectEditing: null,
+    projectTemp: null,
+    saved: true,
     name: "",
-    saved: false,
+
     vm: null,
     running: false,
     variables: [] //item={visible, id, value, name}
@@ -19,25 +24,19 @@ const INITIAL_STATE = {
 
 export const actions = {
     _updateState: (state) => {
-        return {
-            type: ACTION_UPDATE_STATE,
-            state
-        };
+        return { type: ACTION_UPDATE_STATE, state };
     },
     init: () => (dispatch, getState) => {
         console.log("## init vm")
         const vm = new VM();
         vm.start();
+        dispatch(actions._updateState({ vm }));
 
-        // 为了正常使用blocks，至少load一个project，保证至少有一个target
-        // 为了方便，直接生成一个默认的项目，json格式，加载即可
-        // default_sc_project.json的生成：使用官方的scratch-gui，const json = vm.toJSON();
+        // 为了正常使用 blocks，至少 load 一个 project，保证至少有一个 target
+        // 为了方便，直接生成一个默认的项目，json 格式，加载即可
+        // blankScProject.json 的生成：使用官方的 scratch-gui，const json = vm.toJSON();
         //参考：scratch-gui/lib/vm-listener-hoc.jsx
-        const data = cloneDeep(blankScProject);
-        const project = cloneDeep(blankProject);
-        project.data = data;
-        vm.loadProject(data);
-        dispatch(actions._updateState({ vm, project, saved: false }));
+        dispatch(actions.loadProjectAsTemp());
 
         document.addEventListener('keydown', (e) => {
             // Don't capture keys intended for Blockly inputs.
@@ -84,12 +83,12 @@ export const actions = {
                 dispatch(actions._updateState({ saved: false }));
             }
         );
-        //not be called back if the visible of variables are all false
-        //TODO: bug-fix, visible is true when a new variable first added, but checkbox is false in tool-box
+        // not be called back if the visible of variables are all false
+        // TODO: bug-fix, visible is true when a new variable first added, but checkbox is false in tool-box
         vm.on(
             'MONITORS_UPDATE',
             (monitorList) => {
-                //variable count: monitorList._list._tail.array.length
+                // variable count: monitorList._list._tail.array.length
                 const variables = [];
                 const array = monitorList._list._tail.array;
                 for (let i = 0; i < array.length; i++) {
@@ -101,43 +100,146 @@ export const actions = {
             }
         );
     },
+    loadProjectAsEditing: (project) => (dispatch, getState) => {
+        const { vm } = getState().projectEdit;
+        vm.loadProject(project.data);
+        const { name = "未命名" } = project.data.meta;
+        dispatch(actions._updateState({
+            projectEditing: project,
+            projectTemp: null,
+            saved: true,
+            name
+        }));
+    },
+    loadProjectAsTemp: () => (dispatch, getState) => {
+        const { vm } = getState().projectEdit;
+        const data = cloneDeep(blankScProject);
+        const project = cloneDeep(blankProject);
+        project.data = data;
+        vm.loadProject(data);
+        dispatch(actions._updateState({
+            projectEditing: null,
+            projectTemp: project,
+            saved: true,
+            name: "临时项目",
+        }));
+    },
+    dispose: () => async (dispatch, getState) => {
+        dispatch(actions._updateState({
+            projectEditing: null,
+            projectTemp: null,
+            saved: true,
+            name: "",
+        }));
+    },
     saveProject: () => async (dispatch, getState) => {
-        const { project, name, vm } = getState().projectEdit;
-
-        // vm.toJSON() 返回 string
-        const data = JSON.parse(vm.toJSON());
-        data.meta.name = name;
-
-        if (project.filepath.length === 0) {
-            // 是 blank project
-            const { status, result } = await api.createProject(data);
-            if (status === "ok") {
-                message.success("新建成功");
-                dispatch(actions._updateState({ project: result, saved: true }));
-                dispatch(projectManageActions.readMyProjects());
-            } else {
-                message.error("新建失败");
-            }
-        } else {
-            project.data = data;
-            const { status, result } = await api.updateMyProject(project);
-            if (status === "ok") {
-                message.success('保存成功');
-                dispatch(actions._updateState({ project: result, saved: true }));
-                dispatch(projectManageActions.readMyProjects());
-            } else {
-                message.error('保存失败');
-            }
+        if (getState().projectEdit.saved) {
+            return { type: null };
         }
+
+        const { projectEditing, projectTemp, name, vm } = getState().projectEdit;
+
+        const processProjectEditing = () => {
+            if (!projectEditing) {
+                return;
+            }
+            return new Promise((resolve, reject) => {
+                Modal.confirm({
+                    title: '项目有修改',
+                    icon: <ExclamationCircleOutlined />,
+                    okText: "放弃修改",
+                    okType: "danger",
+                    onOk: () => {
+                        dispatch(actions.dispose());
+                        resolve();
+                    },
+                    cancelText: "保存修改",
+                    onCancel: async () => {
+                        const project = cloneDeep(projectEditing);
+                        project.data = JSON.parse(vm.toJSON()); // vm.toJSON() 返回 string
+                        project.data.meta.name = name;
+                        // 更新已有的项目
+                        const { status, result } = await api.updateMyProject(project);
+                        if (status === "ok") {
+                            message.success('保存成功');
+                            dispatch(actions._updateState({
+                                projectEditing: project,
+                                projectTemp: null,
+                                saved: true
+                            }));
+                            dispatch(projectManageActions.readMyProjects());
+                            resolve();
+                        } else {
+                            message.error('保存失败');
+                            reject();
+                        }
+                    }
+                });
+            });
+        };
+
+        const processProjectTemp = () => {
+            if (!projectTemp) {
+                return;
+            }
+            return new Promise((resolve, reject) => {
+                const name = `新项目 ${new Date().toLocaleDateString()}`;
+                showStringInputModal({
+                    title: "当前项目未保存",
+                    name,
+                    okText: "保存",
+                    cancelText: "不保存",
+                    onOk: async (newName) => {
+                        if (newName.length === 0) {
+                            message.warning('项目名不能为空');
+                            return;
+                        }
+                        // vm.toJSON() 返回 string
+                        const data = JSON.parse(vm.toJSON());
+                        data.meta.name = name;
+                        // 创建新的项目
+                        const { status, result } = await api.createProject(data);
+                        if (status === "ok") {
+                            message.success("保存成功");
+                            // projectTemp 保存后，就变成了 projectEditing
+                            dispatch(actions._updateState({
+                                projectEditing: result,
+                                projectTemp: null,
+                                saved: true,
+                                name
+                            }));
+                            dispatch(projectManageActions.readMyProjects());
+                            resolve();
+                        } else {
+                            message.error("保存失败");
+                            reject();
+                        }
+                    },
+                    onCancel: () => {
+                        dispatch(actions.dispose());
+                        resolve();
+                    }
+                })
+            });
+        }
+
+        await processProjectEditing();
+
+        await processProjectTemp();
     },
-    renameProject: (name) => async (dispatch, getState) => {
-        dispatch(actions._updateState({ name, saved: false }));
+    test: () => async (dispatch, getState) => {
+        console.log("test")
+        await tt();
+        dispatch(actions.renameProject("liuming"))
     },
-    loadProjectToWorkspace: (project) => async (dispatch, getState) => {
-        const { name } = project.data.meta;
-        // vm doto
-        dispatch(actions._updateState({ project, name, saved: true, }));
-    }
+};
+
+const tt = () => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve();
+        }, 3000)
+    });
 };
 
 export default function reducer(state = INITIAL_STATE, action) {
