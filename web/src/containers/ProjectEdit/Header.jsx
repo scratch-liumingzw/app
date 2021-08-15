@@ -18,30 +18,7 @@ class Index extends React.Component {
         onClickSave: async () => {
             await this.props.saveProject();
         },
-        createNewProject: () => {
-            const name = `新建项目 ${new Date().toLocaleDateString()}`;
-            showStringInputModal({
-                title: "项目名称",
-                name,
-                okText: "新建",
-                cancelText: "取消",
-                onOk: (newName) => {
-                    if (newName.length === 0) {
-                        message.warning('项目名不能为空');
-                        return;
-                    }
-                    const data = cloneDeep(project.data);
-                    data.name = newName;
-                    this.setState({ project: null });
-                    this.props.onConfirm(data);
-                },
-                onCancel: () => {
-                    this.setState({ project: null });
-                }
-            })
-        },
         getMenu4file: () => {
-            const { t } = this.props;
             return (
                 <Menu onClick={this.actions.onMenu4fileClick}>
                     <Menu.Item key="New">{"新建项目"}</Menu.Item>
@@ -50,32 +27,27 @@ class Index extends React.Component {
                 </Menu>
             )
         },
-        onMenu4fileClick: ({ key }) => {
-            const props = this.props;
+        onMenu4fileClick: async ({ key }) => {
             switch (key) {
-                case "New": {
-                    if (props.saved) {
-                        this.actions.createNewProject();
-                        return;
-                    }
+                case "New":
+                    await this.props.saveProject();
+                    this.props.dispose();
 
-                    Modal.confirm({
-                        title: '项目有修改',
-                        icon: <ExclamationCircleOutlined />,
-                        okText: "放弃修改",
-                        okType: "danger",
-                        onOk: () => {
-                            this.actions.createNewProject();
+                    showStringInputModal({
+                        title: "项目名称",
+                        name: `新建项目 ${new Date().toLocaleDateString()}`,
+                        okText: "新建",
+                        cancelText: "取消",
+                        onOk: (inputName) => {
+                            if (inputName.length === 0) {
+                                message.warning('项目名不能为空');
+                                return;
+                            }
+                            await this.props.newThenLoadProjectAsEditing(inputName)
                         },
-                        cancelText: "保存修改",
-                        onCancel: async () => {
-                            await this.props.saveProject();
+                        onCancel: () => {
                         }
-                    });
-                    break;
-                }
-                case "Save As":
-
+                    })
                     break;
                 case "My Projects":
                     this.props.showProjectManageModal();
@@ -124,7 +96,7 @@ class Index extends React.Component {
 
 const mapStateToProps = (state) => {
     const { projectEditing, projectTemp, saved, name } = state.projectEdit;
-    console.log("===========================")
+    console.log("==================================")
     console.log("name: ", name)
     console.log("saved: ", saved)
     // console.log("projectEditing: ", JSON.stringify(projectEditing, null, 2))
@@ -142,8 +114,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         setRoute: (route) => dispatch(routerActions.setRoute(route)),
-        saveProject: () => dispatch(projectEditActions.saveProject()),
         showProjectManageModal: () => dispatch(projectManageActions.showProjectManageModal()),
+        saveProject: () => dispatch(projectEditActions.saveProject()),
+        newThenLoadProjectAsEditing: (name) => dispatch(projectEditActions.newThenLoadProjectAsEditing(name)),
     };
 };
 
