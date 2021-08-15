@@ -1,13 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import ProjectEdit from "./ProjectEdit/index.jsx";
-import ProjectManage from "./ProjectManageModal/index.jsx";
+import Scratch from "./Scratch/index.jsx";
 import Router from "./Router/index.jsx";
 import { actions as hotKeysActions } from "../reducers/hotKeys";
 import { actions as projectManageActions } from "../reducers/projectManage";
 import { actions as projectEditActions } from "../reducers/projectEdit";
 import { actions as socketActions } from "../reducers/socket";
-import { ROUTE_PROJECT_MANAGE, ROUTE_PROJECT_EDIT, ROUTE_ROUTER } from "../constants.js";
+import { ROUTE_SCRATCH, ROUTE_ROUTER } from "../constants.js";
 import styles from './styles.css';
 
 class Index extends React.Component {
@@ -23,11 +22,8 @@ class Index extends React.Component {
                 <div className={route === ROUTE_ROUTER ? styles.div_visible : styles.div_hidden}>
                     <Router />
                 </div>
-                <div className={route === ROUTE_PROJECT_MANAGE ? styles.div_visible : styles.div_hidden}>
-                    <ProjectManage />
-                </div>
-                <div className={route === ROUTE_PROJECT_EDIT ? styles.div_visible : styles.div_hidden}>
-                    <ProjectEdit />
+                <div className={route === ROUTE_SCRATCH ? styles.div_visible : styles.div_hidden}>
+                    <Scratch />
                 </div>
             </>
         )

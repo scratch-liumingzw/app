@@ -123,7 +123,7 @@ export const actions = {
             name
         }));
     },
-    newThenLoadProjectAsEditing: async (name) => (dispatch, getState) => {
+    newThenLoadProjectAsEditing: (name) => async (dispatch, getState) => {
         const data = cloneDeep(blankScProject);
         data.meta.name = name;
         const { status, result: project } = await api.createProject(data);

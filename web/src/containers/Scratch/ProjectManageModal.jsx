@@ -5,7 +5,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { actions as projectManageActions } from "../../reducers/projectManage";
 import { actions as projectEditActions } from "../../reducers/projectEdit";
 import { actions as routerActions } from "../../reducers/router";
-import { ROUTE_PROJECT_EDIT } from "../../constants.js";
+import { ROUTE_ROUTER } from "../../constants.js";
 import showStringInputModal from "../../components/Modals/showStringInputModal.jsx";
 import ProjectInfo from "../../components/ProjectInfo/index.jsx";
 
@@ -24,7 +24,7 @@ class Index extends React.Component {
             this.setState({ project })
         },
         onClickEdit: () => {
-            this.props.setRoute(ROUTE_PROJECT_EDIT);
+            this.props.setRoute(ROUTE_ROUTER);
             this.props.loadProjectToWorkspace(this.state.project);
             this.setState({ project: null })
         },
@@ -83,7 +83,6 @@ class Index extends React.Component {
         onClickCancel: () => {
 
         },
-
     };
 
     componentWillReceiveProps(nextProps) {
@@ -109,6 +108,7 @@ class Index extends React.Component {
                 width={"80%"}
                 footer={[
                     <Button
+                        key={1}
                         ghost
                         disabled={!state.project}
                         type="primary"
@@ -117,6 +117,7 @@ class Index extends React.Component {
                         打开
                     </Button>,
                     <Button
+                        key={2}
                         ghost
                         disabled={!state.project}
                         type="primary"
@@ -125,6 +126,7 @@ class Index extends React.Component {
                         重命名
                     </Button>,
                     <Button
+                        key={3}
                         ghost
                         disabled={!state.project}
                         type="primary"
@@ -133,6 +135,7 @@ class Index extends React.Component {
                         删除
                     </Button>,
                     <Button
+                        key={4}
                         ghost
                         disabled={!state.project}
                         type="primary"

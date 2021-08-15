@@ -1,9 +1,9 @@
-import { ROUTE_GESTURE, ROUTE_VOICE, ROUTE_PROJECT_MANAGE, ROUTE_ROUTER, ROUTE_PROJECT_EDIT } from "../constants.js";
+import { ROUTE_GESTURE, ROUTE_VOICE, ROUTE_SCRATCH, ROUTE_ROUTER } from "../constants.js";
 
 const ACTION_UPDATE_STATE = 'router/ACTION_UPDATE_STATE';
 
 const INITIAL_STATE = {
-    route: ROUTE_PROJECT_EDIT
+    route: ROUTE_SCRATCH
 };
 
 const actions = {

@@ -38,7 +38,7 @@ class Index extends React.Component {
                         name: `新建项目 ${new Date().toLocaleDateString()}`,
                         okText: "新建",
                         cancelText: "取消",
-                        onOk: (inputName) => {
+                        onOk: async (inputName) => {
                             if (inputName.length === 0) {
                                 message.warning('项目名不能为空');
                                 return;
