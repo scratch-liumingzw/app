@@ -8,7 +8,8 @@ export default ({
     name,
     okText,
     cancelText,
-    onOk
+    onOk,
+    onCancel
 }) => {
     let _name = name;
     Modal.confirm({
@@ -31,6 +32,9 @@ export default ({
         cancelText,
         onOk() {
             return onOk(_name.trim())
+        },
+        onCancel() {
+            return onCancel()
         }
     })
 };
