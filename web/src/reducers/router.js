@@ -1,9 +1,9 @@
 import { ROUTE_GESTURE, ROUTE_VOICE, ROUTE_SCRATCH, ROUTE_ROUTER } from "../constants.js";
-
+import socketClientManager from "../socket/socketClientManager.js"
 const ACTION_UPDATE_STATE = 'router/ACTION_UPDATE_STATE';
 
 const INITIAL_STATE = {
-    route: ROUTE_SCRATCH
+    route: ROUTE_ROUTER
 };
 
 const actions = {
@@ -13,8 +13,10 @@ const actions = {
     setRoute: (route) => (dispatch) => {
         switch (route) {
             case ROUTE_GESTURE:
+                socketClientManager.emitToServer(ROUTE_GESTURE)
                 break;
             case ROUTE_VOICE:
+                socketClientManager.emitToServer(ROUTE_VOICE)
                 break;
             default:
                 dispatch(actions._updateState({ route }));

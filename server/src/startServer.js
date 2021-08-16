@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import childProcess from 'child_process';
 import http from "http";
 import Koa from 'koa';
 import koaBody from 'koa-body';
@@ -10,6 +11,8 @@ import _ from 'lodash';
 import storeManager from './storeManager.js';
 import SocketIoServer from 'socket.io';
 import { getTimeStr } from './utils.js';
+import { ROUTE_GESTURE, ROUTE_VOICE, RUN_PYTHON_STRING, RUN_PYTHON_RESULTS, RUN_PYTHON_ERR, RUN_PYTHON_FINISHED } from "./constants.js";
+import { PythonShell } from 'python-shell';
 
 let httpAddress = null;
 const app = new Koa();
@@ -130,9 +133,49 @@ const setupSocketServer = () => {
                 socket.removeAllListeners();
             });
 
-            socket.on("test", (data) => {
-                console.log("socket receive: key = test, data = ", data)
-                // socket.emit(GCODE_SENDER_ON_PROGRESS_CHANGE, { total, sent, taskId })
+            socket.on(ROUTE_GESTURE, () => {
+                console.log("------------------------------------------------------")
+                console.log("socket receive: ")
+                console.log("type: ", ROUTE_GESTURE)
+                console.log("//////////////////////////////////////////////////////")
+            });
+
+            socket.on(ROUTE_VOICE, () => {
+                console.log("------------------------------------------------------")
+                console.log("socket receive: ")
+                console.log("type: ", ROUTE_VOICE)
+                console.log("//////////////////////////////////////////////////////")
+            });
+
+            socket.on(RUN_PYTHON_STRING, ({ string }) => {
+                console.log("------------------------------------------------------")
+                console.log("socket receive: ")
+                console.log("type: ", RUN_PYTHON_STRING);
+                console.log("string: ");
+                console.log(string);
+                console.log("//////////////////////////////////////////////////////")
+
+                const options = {
+                    mode: 'text',
+                    // pythonPath: 'path/to/python',
+                    pythonOptions: ['-u'], // get print results in real-time
+                    // scriptPath: 'path/to/my/scripts',
+                    args: ['value1', 'value2', 'value3']
+                };
+
+                PythonShell.runString(
+                    string,
+                    options,
+                    (err, results) => {
+                        if (err) {
+                            console.error("PythonShell.runString err: " + err)
+                            socket.emit(RUN_PYTHON_ERR, { err });
+                        } else {
+                            socket.emit(RUN_PYTHON_RESULTS, { results });
+                        }
+                        socket.emit(RUN_PYTHON_FINISHED);
+                    }
+                );
             });
         }
     );

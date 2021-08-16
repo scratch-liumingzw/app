@@ -10,5 +10,5 @@ export default combineReducers({
     projectEdit,
     projectManage,
     router,
-    socket
+    socket,
 });
