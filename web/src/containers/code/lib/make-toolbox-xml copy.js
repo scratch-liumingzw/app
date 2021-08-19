@@ -2,10 +2,31 @@ import ScratchBlocks from "scratch-blocks";
 
 const categorySeparator = '<sep gap="15"/>';
 
-const robotArm = function () {
+//颜色和scratch-blocks/core/colours.js保持一致
+const motion = function () {
     return `
-    <category name="%{BKY_CATEGORY_ROBOT_ARM}" id="motion" colour="#4C97FF" secondaryColour="#3373CC">
-       <block type="RA_MOTION_SET_ANGLES">
+    <category name="%{BKY_CATEGORY_MOTION}" id="motion" colour="#4C97FF" secondaryColour="#3373CC">
+       <block type="RS_MOTION_SAY_HELLO"/>
+       <block type="RS_MOTION_MOVE_HOME"/>
+       <block type="RS_MOTION_MOVE_ORIGIN"/>
+       <block type="RS_MOTION_MOVE_POSITION">
+            <value name="VALUE1">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+            <value name="VALUE2">
+                <shadow type="math_number">
+                    <field name="NUM">350</field>
+                </shadow>
+            </value>
+            <value name="VALUE3">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+       </block>
+       <block type="RS_MOTION_MOVE_RELATIVE">
             <value name="VALUE1">
                 <shadow type="math_number">
                     <field name="NUM">0</field>
@@ -18,26 +39,72 @@ const robotArm = function () {
             </value>
             <value name="VALUE3">
                 <shadow type="math_number">
-                    <field name="NUM">0</field>
+                    <field name="NUM">10</field>
                 </shadow>
             </value>
-            <value name="VALUE4">
+       </block>
+       <block type="RS_MOTION_MOVE_RECTANGLE">
+            <value name="VALUE2">
                 <shadow type="math_number">
-                    <field name="NUM">0</field>
+                    <field name="NUM">40</field>
                 </shadow>
             </value>
-            <value name="VALUE5">
+            <value name="VALUE3">
                 <shadow type="math_number">
-                    <field name="NUM">0</field>
+                    <field name="NUM">20</field>
                 </shadow>
             </value>
-            <value name="VALUE6">
+       </block>
+       <block type="RS_MOTION_MOVE_CIRCLE">
+            <value name="VALUE2">
                 <shadow type="math_number">
-                    <field name="NUM">0</field>
+                    <field name="NUM">10</field>
+                </shadow>
+            </value>
+       </block>
+       <block type="RS_MOTION_ROTATE_WRIST">
+            <value name="VALUE2">
+                <shadow type="math_number">
+                    <field name="NUM">45</field>
                 </shadow>
             </value>
        </block>
        ${categorySeparator}
+    </category>
+    `;
+};
+
+const frontEnd = function () {
+    return `
+    <category name="%{BKY_CATEGORY_RS_FRONT_END}" id="front_end" colour="#6F53F4" secondaryColour="#583FF3">
+        <block type="RS_FRONT_END_AIR_PICKER"/>
+        <block type="RS_FRONT_END_SOFT_GRIPPER"/>
+        ${categorySeparator}
+    </category>
+    `;
+};
+
+const settings = function () {
+    return `
+    <category name="%{BKY_CATEGORY_RS_SETTINGS}" id="settings" colour="#8E66BC" secondaryColour="#7D51B1">
+        <block type="RS_SETTINGS_SELECT_FRONT_END"/>
+        <block type="RS_SETTINGS_SET_SPEED">
+            <value name="VALUE1">
+                <shadow type="math_number">
+                    <field name="NUM">1000</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="RS_SETTINGS_SET_ACCELERATION">
+            <value name="VALUE2">
+                <shadow type="math_number">
+                    <field name="NUM">200</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="RS_SETTINGS_SET_MOTION_MODE"/>
+        <block type="RS_SETTINGS_SET_WORK_ORIGIN"/>
+        ${categorySeparator}
     </category>
     `;
 };
@@ -100,6 +167,45 @@ const sensing = function () {
                 <shadow type="sensing_keyoptions"/>
             </value>
         </block>
+        <block type="RS_SENSING_CURRENT_POSITION"/>
+        <block type="RS_SENSING_CURRENT_ACCELERATION"/>
+        ${categorySeparator}
+    </category>
+    `;
+};
+
+const sliding_rail = function () {
+    return `
+    <category name="%{BKY_CATEGORY_RS_SLIDING_RAIL}" id="sliding_rail" colour="#B551B3" secondaryColour="#AC44AB">
+       <block type="RS_SLIDING_RAIL_MOVE">
+            <value name="VALUE2">
+                <shadow  type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>
+            <value name="VALUE3">
+                <shadow  type="math_number">
+                    <field name="NUM">2000</field>
+                </shadow>
+            </value>
+       </block>
+       <block type="RS_SLIDING_RAIL_MOVE_TO_ORIGIN"/>
+       ${categorySeparator}
+    </category>
+    `;
+};
+
+const conveyor_belt = function () {
+    return `
+    <category name="%{BKY_CATEGORY_RS_CONVEYOR_BELT}" id="conveyor_belt" colour="#FF7122" secondaryColour="#D2581A">
+       <block type="RS_CONVEYOR_BELT_MOVE">
+            <value name="VALUE2">
+                <shadow  type="math_number">
+                    <field name="NUM">5000</field>
+                </shadow>
+            </value>
+       </block>
+        <block type="RS_CONVEYOR_BELT_STOP"/>
         ${categorySeparator}
     </category>
     `;
@@ -324,7 +430,9 @@ const makeToolboxXML = function (isStage, targetId, categoriesXML = [], costumeN
         }
         // return `undefined`
     };
-    const robotArmXML = moveCategory('motion') || robotArm(isStage, targetId);
+    const frontEndXML = moveCategory('front_end') || frontEnd(isStage, targetId);
+    const settingsXML = moveCategory('settings') || settings(isStage, targetId);
+    const motionXML = moveCategory('motion') || motion(isStage, targetId);
     const eventsXML = moveCategory('event') || events(isStage, targetId);
     const controlXML = moveCategory('control') || control(isStage, targetId);
     const sensingXML = moveCategory('sensing') || sensing(isStage, targetId);
@@ -333,8 +441,12 @@ const makeToolboxXML = function (isStage, targetId, categoriesXML = [], costumeN
 
     //TODO: 弄明白代码
     const everything = [
-        xmlOpen, gap,
-        robotArmXML, gap,
+        xmlOpen,
+        motionXML, gap,
+        frontEndXML, gap,
+        settingsXML, gap,
+        sliding_rail, gap,
+        conveyor_belt, gap,
         eventsXML, gap,
         controlXML, gap,
         sensingXML, gap,

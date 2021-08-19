@@ -100,13 +100,13 @@ class Index extends React.Component {
 
 const mapStateToProps = (state) => {
     const { projectEditing, projectTemp, saved, name } = state.projectEdit;
-    console.log("==================================")
-    console.log("name: ", name)
-    console.log("saved: ", saved)
-    // console.log("projectEditing: ", JSON.stringify(projectEditing, null, 2))
-    // console.log("projectTemp: ", JSON.stringify(projectTemp, null, 2))
-    console.log("projectEditing: ", projectEditing)
-    console.log("projectTemp: ", projectTemp)
+    // console.log("==================================")
+    // console.log("name: ", name)
+    // console.log("saved: ", saved)
+    // // console.log("projectEditing: ", JSON.stringify(projectEditing, null, 2))
+    // // console.log("projectTemp: ", JSON.stringify(projectTemp, null, 2))
+    // console.log("projectEditing: ", projectEditing)
+    // console.log("projectTemp: ", projectTemp)
     return {
         projectEditing,
         projectTemp,

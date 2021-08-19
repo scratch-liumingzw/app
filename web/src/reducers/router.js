@@ -3,7 +3,7 @@ import socketClientManager from "../socket/socketClientManager.js"
 const ACTION_UPDATE_STATE = 'router/ACTION_UPDATE_STATE';
 
 const INITIAL_STATE = {
-    route: ROUTE_ROUTER
+    route: ROUTE_SCRATCH
 };
 
 const actions = {

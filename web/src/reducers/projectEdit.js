@@ -102,6 +102,25 @@ export const actions = {
                 dispatch(actions._updateState({ variables }));
             }
         );
+
+        vm.runtime.on(
+            'robot-arm-async',
+            (data) => {
+                const { blockName, args, resolve } = data;
+                switch (blockName) {
+                    case "RA_MOTION_SET_ANGLES": {
+                        const { VALUE1, VALUE2, VALUE3, VALUE4, VALUE5, VALUE6 } = args;
+                        console.log("###############")
+                        console.log(args);
+
+                        setTimeout(() => {
+                            resolve();
+                        }, 1000);
+                        break;
+                    }
+                }
+            }
+        );
     },
     loadBlankScProjectAsTemp: () => (dispatch, getState) => {
         const { vm } = getState().projectEdit;
