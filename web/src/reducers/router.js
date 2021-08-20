@@ -3,14 +3,14 @@ import socketClientManager from "../socket/socketClientManager.js"
 const ACTION_UPDATE_STATE = 'router/ACTION_UPDATE_STATE';
 
 const INITIAL_STATE = {
-    route: ROUTE_SCRATCH
+    route: ROUTE_ROUTER
 };
 
 const actions = {
     _updateState: (state) => {
         return { type: ACTION_UPDATE_STATE, state };
     },
-    setRoute: (route) => (dispatch) => {
+    setRoute: (route) => (dispatch, getState) => {
         switch (route) {
             case ROUTE_GESTURE:
                 socketClientManager.emitToServer(ROUTE_GESTURE)

@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import ScratchBlocks from 'scratch-blocks';
 import makeToolboxXML from '../../code/lib/make-toolbox-xml';
+import { ROUTE_SCRATCH } from "../../../constants.js";
 
 const BLOCKS_DEFAULT_OPTIONS = {
     media: './asset/scratch-blocks/media/',
@@ -50,7 +51,16 @@ class Blocks extends React.Component {
 
         this.updateCss();
 
+        this.changeLocale("zh-cn");
+
         this.props.vm.refreshWorkspace();
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.route !== nextProps.route && nextProps.route === ROUTE_SCRATCH) {
+            ScratchBlocks.svgResize(this.workspace);
+            this.props.vm.refreshWorkspace();
+        }
     }
 
     changeLocale = (locale) => {
@@ -155,8 +165,10 @@ class Blocks extends React.Component {
 }
 
 const mapStateToProps = (state) => {
+    const { route } = state.router;
     const { vm } = state.projectEdit;
     return {
+        route,
         vm,
     };
 };
