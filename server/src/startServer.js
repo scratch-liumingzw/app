@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import childProcess from 'child_process';
+import { PythonShell } from 'python-shell';
 import http from "http";
 import Koa from 'koa';
 import koaBody from 'koa-body';
@@ -12,7 +12,6 @@ import storeManager from './storeManager.js';
 import SocketIoServer from 'socket.io';
 import { getTimeStr } from './utils.js';
 import { ROUTE_GESTURE, ROUTE_VOICE, RUN_PYTHON_STRING, RUN_PYTHON_RESULTS, RUN_PYTHON_ERR, RUN_PYTHON_FINISHED } from "./constants.js";
-import { PythonShell } from 'python-shell';
 
 let httpAddress = null;
 const app = new Koa();
