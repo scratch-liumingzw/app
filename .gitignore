@@ -20,6 +20,6 @@
 /server/package-lock.json
 
 #web
-/web/build-web/bundle.js*
+/web/build-web/bundle.js.map
 /web/node_modules
 /web/package-lock.json
