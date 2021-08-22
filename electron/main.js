@@ -15,7 +15,7 @@ function createWindow() {
     });
     mainWindow.loadFile('./build-web/index.html')
 
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     // Open every external link in a new window of default OS browser
     // https://github.com/electron/electron/blob/master/docs/api/web-contents.md

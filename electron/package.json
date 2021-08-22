@@ -15,7 +15,7 @@
   },
   "build": {
     "appId": "com.sensetime.tsc.pdl",
-    "asar": true,
+    "asar": false,
     "productName": "Robot Hand",
     "directories": {
       "buildResources": "buildResources",
@@ -40,7 +40,7 @@
       ]
     },
     "dmg": {
-      "background": "buildResources/background.png",
+      "background": "buildResources/background.tiff",
       "icon": "buildResources/icon.icns",
       "iconSize": 80,
       "iconTextSize": 12,
@@ -70,7 +70,7 @@
     }
   },
   "devDependencies": {
-    "electron": "^11.0.0",
+    "electron": "^9.0.0",
     "electron-builder": "^22.11.7"
   },
   "dependencies": {

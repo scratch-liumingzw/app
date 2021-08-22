@@ -12,6 +12,7 @@ import storeManager from './storeManager.js';
 import SocketIoServer from 'socket.io';
 import { getTimeStr } from './utils.js';
 import { ROUTE_GESTURE, ROUTE_VOICE, RUN_PYTHON_STRING, RUN_PYTHON_RESULTS, RUN_PYTHON_ERR, RUN_PYTHON_FINISHED } from "./constants.js";
+import { error } from 'console';
 
 let httpAddress = null;
 const app = new Koa();
@@ -136,6 +137,27 @@ const setupSocketServer = () => {
                 console.log("------------------------------------------------------")
                 console.log("socket receive: ")
                 console.log("type: ", ROUTE_GESTURE)
+
+
+                const options = {
+                    mode: 'text',
+                    // pythonPath: 'path/to/python',
+                    pythonOptions: ['-u'], // get print results in real-time
+                    scriptPath: path.join(storeManager.dir_assets, "python"),
+                    args: ['value1', 'value2', 'value3']
+                };
+
+                console.log('scriptPath: ' + options.scriptPath)
+
+                PythonShell.run('my_script.py', options, function (err, results) {
+                    if (err) {
+                        console.error("#err: " + err)
+                    } else {
+                        // results is an array consisting of messages collected during execution
+                        console.log('results: %j', results);
+                    }
+                });
+
                 console.log("//////////////////////////////////////////////////////")
             });
 
